@@ -1,0 +1,2346 @@
+{
+  "components": {
+    "schemas": {
+      "Accepted": {
+        "additionalProperties": false,
+        "properties": {
+          "job_id": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "job_id"
+        ],
+        "type": "object"
+      },
+      "AddMistakeInput": {
+        "additionalProperties": false,
+        "properties": {
+          "belief": {
+            "maxLength": 300,
+            "minLength": 1,
+            "type": "string"
+          },
+          "correction": {
+            "maxLength": 300,
+            "minLength": 1,
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "mock",
+              "chat"
+            ],
+            "type": "string"
+          },
+          "subtopic": {
+            "description": "subtopic slug",
+            "type": "string"
+          },
+          "topic": {
+            "description": "topic slug",
+            "type": "string"
+          }
+        },
+        "required": [
+          "topic",
+          "subtopic",
+          "belief",
+          "correction",
+          "source"
+        ],
+        "type": "object"
+      },
+      "AnswerRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "chosen": {
+            "description": "the IDs of the chosen options",
+            "items": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "position": {
+            "format": "int64",
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "position",
+          "chosen"
+        ],
+        "type": "object"
+      },
+      "Bank": {
+        "additionalProperties": false,
+        "properties": {
+          "available": {
+            "description": "questions a quiz could show now: not shown in the last 7 days",
+            "format": "int64",
+            "type": "integer"
+          },
+          "back_at": {
+            "description": "when the first resting question can be shown again",
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "easier": {
+            "description": "available questions predicted easier than the target",
+            "format": "int64",
+            "type": "integer"
+          },
+          "harder": {
+            "description": "available questions predicted harder than the target",
+            "format": "int64",
+            "type": "integer"
+          },
+          "near_level": {
+            "description": "available questions at the learner's level (within the fit window of the target)",
+            "format": "int64",
+            "type": "integer"
+          },
+          "questions": {
+            "description": "active questions",
+            "format": "int64",
+            "type": "integer"
+          },
+          "quiz_length": {
+            "description": "questions in the next quiz; 0 when a quiz can't start",
+            "format": "int64",
+            "type": "integer"
+          },
+          "resting": {
+            "description": "questions shown in the last 7 days",
+            "format": "int64",
+            "type": "integer"
+          },
+          "state": {
+            "enum": [
+              "plenty",
+              "low",
+              "offlevel",
+              "blocked"
+            ],
+            "type": "string"
+          },
+          "writing": {
+            "description": "Claude is writing questions for this topic now",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "questions",
+          "available",
+          "near_level",
+          "harder",
+          "easier",
+          "resting",
+          "back_at",
+          "state",
+          "writing",
+          "quiz_length"
+        ],
+        "type": "object"
+      },
+      "Card": {
+        "additionalProperties": false,
+        "properties": {
+          "answers": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "bank": {
+            "$ref": "#/components/schemas/Bank"
+          },
+          "elo": {
+            "description": "0–300",
+            "format": "int64",
+            "type": "integer"
+          },
+          "empty": {
+            "type": "boolean"
+          },
+          "last_quiz": {
+            "$ref": "#/components/schemas/QuizBrief",
+            "description": "the latest finished quiz"
+          },
+          "level": {
+            "type": "string"
+          },
+          "margin": {
+            "description": "± Elo points: one standard deviation",
+            "format": "int64",
+            "type": "integer"
+          },
+          "mistakes_due": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "open_quiz": {
+            "$ref": "#/components/schemas/QuizBrief",
+            "description": "the latest quiz, when it isn't finished"
+          },
+          "questions": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "spark": {
+            "description": "Elo at the end of each day with answers, over the last 30 days, oldest first",
+            "items": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "slug",
+          "name",
+          "elo",
+          "margin",
+          "level",
+          "answers",
+          "mistakes_due",
+          "questions",
+          "bank",
+          "empty",
+          "spark",
+          "last_quiz",
+          "open_quiz"
+        ],
+        "type": "object"
+      },
+      "ChatRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "$ref": "#/components/schemas/PageContext"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "page"
+        ],
+        "type": "object"
+      },
+      "CheckPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "elo": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "margin": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "elo",
+          "margin",
+          "at"
+        ],
+        "type": "object"
+      },
+      "CheckResult": {
+        "additionalProperties": false,
+        "properties": {
+          "elo": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "level": {
+            "type": "string"
+          },
+          "margin": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "missed_in": {
+            "description": "subtopics with wrong answers, most first",
+            "items": {
+              "$ref": "#/components/schemas/Missed"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "previous": {
+            "$ref": "#/components/schemas/CheckPoint",
+            "description": "the topic's check before this one, if any"
+          }
+        },
+        "required": [
+          "elo",
+          "margin",
+          "level",
+          "previous",
+          "missed_in"
+        ],
+        "type": "object"
+      },
+      "CheckRow": {
+        "additionalProperties": false,
+        "properties": {
+          "answered": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "elo": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "margin": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "quiz_id": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "quiz_id",
+          "at",
+          "elo",
+          "margin",
+          "answered"
+        ],
+        "type": "object"
+      },
+      "Detail": {
+        "additionalProperties": false,
+        "properties": {
+          "bank": {
+            "$ref": "#/components/schemas/Bank"
+          },
+          "checks": {
+            "description": "finished skill checks, newest first",
+            "items": {
+              "$ref": "#/components/schemas/CheckRow"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "elo": {
+            "description": "0–300",
+            "format": "int64",
+            "type": "integer"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/Point"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "level": {
+            "type": "string"
+          },
+          "margin": {
+            "description": "± Elo points: one standard deviation",
+            "format": "int64",
+            "type": "integer"
+          },
+          "mistakes": {
+            "items": {
+              "$ref": "#/components/schemas/MistakeView"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "quizzes": {
+            "description": "the last 10 quizzes, newest first",
+            "items": {
+              "$ref": "#/components/schemas/QuizRow"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "recent": {
+            "$ref": "#/components/schemas/Recent",
+            "description": "the last 40 answers"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "subtopics": {
+            "items": {
+              "$ref": "#/components/schemas/SubtopicView"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "slug",
+          "name",
+          "description",
+          "elo",
+          "margin",
+          "level",
+          "history",
+          "subtopics",
+          "mistakes",
+          "bank",
+          "recent",
+          "quizzes",
+          "checks"
+        ],
+        "type": "object"
+      },
+      "ErrorDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "location": {
+            "description": "Where the error occurred, e.g. 'body.items[3].tags' or 'path.thing-id'",
+            "type": "string"
+          },
+          "message": {
+            "description": "Error message text",
+            "type": "string"
+          },
+          "value": {
+            "description": "The value at the given location"
+          }
+        },
+        "type": "object"
+      },
+      "ErrorModel": {
+        "additionalProperties": false,
+        "properties": {
+          "detail": {
+            "description": "A human-readable explanation specific to this occurrence of the problem.",
+            "examples": [
+              "Property foo is required but is missing."
+            ],
+            "type": "string"
+          },
+          "errors": {
+            "description": "Optional list of individual error details",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "instance": {
+            "description": "A URI reference that identifies the specific occurrence of the problem.",
+            "examples": [
+              "https://example.com/error-log/abc123"
+            ],
+            "format": "uri",
+            "type": "string"
+          },
+          "status": {
+            "description": "HTTP status code",
+            "examples": [
+              400
+            ],
+            "format": "int64",
+            "type": "integer"
+          },
+          "title": {
+            "description": "A short, human-readable summary of the problem type. This value should not change between occurrences of the error.",
+            "examples": [
+              "Bad Request"
+            ],
+            "type": "string"
+          },
+          "type": {
+            "default": "about:blank",
+            "description": "A URI reference to human-readable documentation for the error.",
+            "examples": [
+              "https://example.com/errors/example"
+            ],
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "History": {
+        "additionalProperties": false,
+        "properties": {
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "pending_job": {
+            "description": "a job that is still queued or running, if any",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "messages",
+          "pending_job"
+        ],
+        "type": "object"
+      },
+      "JobView": {
+        "additionalProperties": false,
+        "properties": {
+          "added": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "dropped": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "error": {
+            "type": "string"
+          },
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "reply": {
+            "description": "the assistant's message once the job is done",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "done",
+              "failed"
+            ],
+            "type": "string"
+          },
+          "topic": {
+            "description": "slug of the topic a button press asked Claude to write for; empty for typed messages",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "topic",
+          "status",
+          "error",
+          "reply",
+          "added",
+          "dropped"
+        ],
+        "type": "object"
+      },
+      "Message": {
+        "additionalProperties": false,
+        "properties": {
+          "at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "failed": {
+            "description": "Claude's message about a job that failed; the job can be retried",
+            "type": "boolean"
+          },
+          "job_id": {
+            "description": "the job this message asked for or answered",
+            "format": "int64",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "kind": {
+            "description": "request: a button press such as Write 15, shown as a system card",
+            "enum": [
+              "message",
+              "request"
+            ],
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "user",
+              "assistant"
+            ],
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "kind",
+          "text",
+          "at",
+          "job_id",
+          "failed"
+        ],
+        "type": "object"
+      },
+      "Missed": {
+        "additionalProperties": false,
+        "properties": {
+          "count": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "subtopic": {
+            "description": "subtopic name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subtopic",
+          "count"
+        ],
+        "type": "object"
+      },
+      "MistakeHit": {
+        "additionalProperties": false,
+        "properties": {
+          "belief": {
+            "type": "string"
+          },
+          "correction": {
+            "type": "string"
+          },
+          "due_at": {
+            "description": "from when it comes back: the next quiz in this topic",
+            "format": "date-time",
+            "type": "string"
+          },
+          "hits": {
+            "description": "times the learner has made this mistake",
+            "format": "int64",
+            "type": "integer"
+          },
+          "new": {
+            "description": "the first time the learner fell for a trap Claude wrote, so it's new on their list",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "belief",
+          "correction",
+          "hits",
+          "due_at",
+          "new"
+        ],
+        "type": "object"
+      },
+      "MistakeNote": {
+        "additionalProperties": false,
+        "properties": {
+          "belief": {
+            "type": "string"
+          },
+          "correction": {
+            "type": "string"
+          },
+          "done": {
+            "type": "boolean"
+          },
+          "next_check": {
+            "description": "which of the 5 checks comes next, 1 to 5; 0 when done",
+            "format": "int64",
+            "type": "integer"
+          },
+          "next_due": {
+            "description": "from when it comes back; null when done",
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "belief",
+          "correction",
+          "next_due",
+          "next_check",
+          "done"
+        ],
+        "type": "object"
+      },
+      "MistakeView": {
+        "additionalProperties": false,
+        "properties": {
+          "belief": {
+            "type": "string"
+          },
+          "correction": {
+            "type": "string"
+          },
+          "due_at": {
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "hits": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "needs_questions": {
+            "description": "no unseen question tests this mistake yet",
+            "type": "boolean"
+          },
+          "source": {
+            "type": "string"
+          },
+          "stage": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "watching",
+              "active",
+              "resolved"
+            ],
+            "type": "string"
+          },
+          "subtopic": {
+            "description": "subtopic slug",
+            "type": "string"
+          },
+          "topic": {
+            "description": "topic slug",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "topic",
+          "subtopic",
+          "belief",
+          "correction",
+          "source",
+          "status",
+          "stage",
+          "hits",
+          "due_at",
+          "needs_questions"
+        ],
+        "type": "object"
+      },
+      "OptionFeedback": {
+        "additionalProperties": false,
+        "properties": {
+          "chosen": {
+            "type": "boolean"
+          },
+          "correct": {
+            "type": "boolean"
+          },
+          "explanation": {
+            "type": "string"
+          },
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "mistake": {
+            "description": "the mistake this wrong option stands for, or empty",
+            "type": "string"
+          },
+          "on_list": {
+            "description": "the mistake is one the learner has made, not only a trap Claude wrote",
+            "type": "boolean"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "text",
+          "correct",
+          "chosen",
+          "explanation",
+          "mistake",
+          "on_list"
+        ],
+        "type": "object"
+      },
+      "PageContext": {
+        "additionalProperties": false,
+        "properties": {
+          "chosen": {
+            "description": "the option IDs the learner chose on that question",
+            "items": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "order": {
+            "description": "the option IDs in the order they were shown, so A, B, C… mean what the learner saw",
+            "items": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "page": {
+            "description": "the page the chat was opened on",
+            "enum": [
+              "home",
+              "topic",
+              "quiz",
+              "feedback",
+              "settings"
+            ],
+            "type": "string"
+          },
+          "question_id": {
+            "description": "the question on screen, or 0",
+            "format": "int64",
+            "type": "integer"
+          },
+          "topic": {
+            "description": "topic slug, or empty",
+            "type": "string"
+          }
+        },
+        "required": [
+          "page",
+          "topic",
+          "question_id",
+          "chosen"
+        ],
+        "type": "object"
+      },
+      "Point": {
+        "additionalProperties": false,
+        "properties": {
+          "at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "elo": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "kind": {
+            "enum": [
+              "practice",
+              "check"
+            ],
+            "type": "string"
+          },
+          "quiz_id": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "at",
+          "elo",
+          "quiz_id",
+          "kind"
+        ],
+        "type": "object"
+      },
+      "QuizBrief": {
+        "additionalProperties": false,
+        "properties": {
+          "answered": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "elo_after": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "elo_before": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "finished": {
+            "type": "boolean"
+          },
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "kind": {
+            "enum": [
+              "practice",
+              "check"
+            ],
+            "type": "string"
+          },
+          "length": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "right": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "started_at": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "started_at",
+          "length",
+          "answered",
+          "right",
+          "elo_before",
+          "elo_after",
+          "finished",
+          "kind"
+        ],
+        "type": "object"
+      },
+      "QuizRow": {
+        "additionalProperties": false,
+        "properties": {
+          "answered": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "came_back": {
+            "description": "mistakes the learner made again",
+            "format": "int64",
+            "type": "integer"
+          },
+          "elo_after": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "elo_before": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "expected": {
+            "description": "right answers predicted",
+            "format": "double",
+            "type": "number"
+          },
+          "finished": {
+            "type": "boolean"
+          },
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "kind": {
+            "enum": [
+              "practice",
+              "check"
+            ],
+            "type": "string"
+          },
+          "length": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "moved_on": {
+            "description": "mistakes that moved a step towards done",
+            "format": "int64",
+            "type": "integer"
+          },
+          "right": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "started_at": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "expected",
+          "came_back",
+          "moved_on",
+          "id",
+          "started_at",
+          "length",
+          "answered",
+          "right",
+          "elo_before",
+          "elo_after",
+          "finished",
+          "kind"
+        ],
+        "type": "object"
+      },
+      "Recent": {
+        "additionalProperties": false,
+        "properties": {
+          "answered": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "expected": {
+            "format": "double",
+            "type": "number"
+          },
+          "right": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "answered",
+          "right",
+          "expected"
+        ],
+        "type": "object"
+      },
+      "Result": {
+        "additionalProperties": false,
+        "properties": {
+          "answers_in_topic": {
+            "description": "the learner's answers in this topic so far, this one included",
+            "format": "int64",
+            "type": "integer"
+          },
+          "correct": {
+            "type": "boolean"
+          },
+          "correct_ids": {
+            "items": {
+              "format": "int64",
+              "type": "integer"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "elo_after": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "elo_before": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "finished": {
+            "type": "boolean"
+          },
+          "level": {
+            "type": "string"
+          },
+          "level_before": {
+            "type": "string"
+          },
+          "margin_after": {
+            "description": "± Elo points after this answer",
+            "format": "int64",
+            "type": "integer"
+          },
+          "mistakes_hit": {
+            "items": {
+              "$ref": "#/components/schemas/MistakeHit"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "moved_on": {
+            "description": "mistakes this right answer moved a step towards done",
+            "items": {
+              "$ref": "#/components/schemas/MistakeNote"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/OptionFeedback"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "p": {
+            "description": "the predicted chance of a right answer",
+            "format": "double",
+            "type": "number"
+          }
+        },
+        "required": [
+          "correct",
+          "correct_ids",
+          "options",
+          "mistakes_hit",
+          "moved_on",
+          "p",
+          "answers_in_topic",
+          "elo_before",
+          "elo_after",
+          "margin_after",
+          "level_before",
+          "level",
+          "finished"
+        ],
+        "type": "object"
+      },
+      "ReviewItem": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "code_lang": {
+            "type": "string"
+          },
+          "correct": {
+            "type": "boolean"
+          },
+          "kind": {
+            "enum": [
+              "single",
+              "multi"
+            ],
+            "type": "string"
+          },
+          "options": {
+            "description": "in the order they were shown",
+            "items": {
+              "$ref": "#/components/schemas/OptionFeedback"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "position": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "question_id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "stem": {
+            "type": "string"
+          },
+          "subtopic": {
+            "description": "subtopic name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "position",
+          "question_id",
+          "subtopic",
+          "kind",
+          "stem",
+          "code",
+          "code_lang",
+          "correct",
+          "options"
+        ],
+        "type": "object"
+      },
+      "Settings": {
+        "additionalProperties": false,
+        "properties": {
+          "model": {
+            "description": "the Claude model that writes questions",
+            "enum": [
+              "sonnet",
+              "opus"
+            ],
+            "type": "string"
+          },
+          "target": {
+            "description": "the predicted chance of success questions are aimed at",
+            "enum": [
+              0.65,
+              0.75,
+              0.85
+            ],
+            "format": "double",
+            "type": "number"
+          }
+        },
+        "required": [
+          "target",
+          "model"
+        ],
+        "type": "object"
+      },
+      "Shown": {
+        "additionalProperties": false,
+        "properties": {
+          "done": {
+            "type": "boolean"
+          },
+          "kind": {
+            "enum": [
+              "practice",
+              "check"
+            ],
+            "type": "string"
+          },
+          "length": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "position": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "question": {
+            "$ref": "#/components/schemas/ShownQuestion"
+          },
+          "quiz_id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "thin": {
+            "description": "even the closest question was more than 0.15 off the target",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "quiz_id",
+          "position",
+          "length",
+          "done",
+          "kind",
+          "thin"
+        ],
+        "type": "object"
+      },
+      "ShownOption": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "the option's original index; send it back when answering",
+            "format": "int64",
+            "type": "integer"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "text"
+        ],
+        "type": "object"
+      },
+      "ShownQuestion": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "code_lang": {
+            "type": "string"
+          },
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "kind": {
+            "enum": [
+              "single",
+              "multi"
+            ],
+            "type": "string"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/ShownOption"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "stem": {
+            "type": "string"
+          },
+          "subtopic": {
+            "description": "subtopic name",
+            "type": "string"
+          },
+          "topic": {
+            "description": "topic name",
+            "type": "string"
+          },
+          "topic_slug": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "topic",
+          "topic_slug",
+          "subtopic",
+          "kind",
+          "stem",
+          "code",
+          "code_lang",
+          "options"
+        ],
+        "type": "object"
+      },
+      "StartQuizRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "default": "practice",
+            "description": "practice, or a skill check that measures you",
+            "enum": [
+              "practice",
+              "check"
+            ],
+            "type": "string"
+          },
+          "topic": {
+            "description": "topic slug",
+            "type": "string"
+          }
+        },
+        "required": [
+          "topic"
+        ],
+        "type": "object"
+      },
+      "Started": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "practice",
+              "check"
+            ],
+            "type": "string"
+          },
+          "length": {
+            "description": "the most questions it will ask; a check may stop earlier",
+            "format": "int64",
+            "type": "integer"
+          },
+          "quiz_id": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "quiz_id",
+          "length",
+          "kind"
+        ],
+        "type": "object"
+      },
+      "Status": {
+        "additionalProperties": false,
+        "properties": {
+          "auth": {
+            "enum": [
+              "api_key",
+              "subscription",
+              "none",
+              "unreachable"
+            ],
+            "type": "string"
+          },
+          "claude": {
+            "description": "the Claude CLI version in the runner",
+            "type": "string"
+          },
+          "last_error": {
+            "description": "the error of the last chat job, if it failed",
+            "type": "string"
+          },
+          "questions": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "topics": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "claude",
+          "auth",
+          "topics",
+          "questions",
+          "last_error"
+        ],
+        "type": "object"
+      },
+      "SubtopicView": {
+        "additionalProperties": false,
+        "properties": {
+          "answered": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "expected": {
+            "format": "double",
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "right": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "weak": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "slug",
+          "name",
+          "answered",
+          "right",
+          "expected",
+          "weak"
+        ],
+        "type": "object"
+      },
+      "Summary": {
+        "additionalProperties": false,
+        "properties": {
+          "answered": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "bank_state": {
+            "description": "the topic's question bank now",
+            "enum": [
+              "plenty",
+              "low",
+              "offlevel",
+              "blocked"
+            ],
+            "type": "string"
+          },
+          "came_back": {
+            "description": "mistakes the learner made again in this quiz",
+            "items": {
+              "$ref": "#/components/schemas/MistakeNote"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "check": {
+            "$ref": "#/components/schemas/CheckResult",
+            "description": "a finished skill check's result; null for practice"
+          },
+          "elo_after": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "elo_before": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "expected": {
+            "format": "double",
+            "type": "number"
+          },
+          "kind": {
+            "enum": [
+              "practice",
+              "check"
+            ],
+            "type": "string"
+          },
+          "length": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "level": {
+            "type": "string"
+          },
+          "level_before": {
+            "type": "string"
+          },
+          "margin_after": {
+            "description": "± Elo points after the quiz's last answer",
+            "format": "int64",
+            "type": "integer"
+          },
+          "mistakes_cleared": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "mistakes_hit": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "moved_on": {
+            "description": "mistakes this quiz moved a step towards done",
+            "items": {
+              "$ref": "#/components/schemas/MistakeNote"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "off_level": {
+            "description": "answered questions outside the learner's usual range, because none closer were left",
+            "format": "int64",
+            "type": "integer"
+          },
+          "quiz_id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "review": {
+            "description": "the answered questions, in order",
+            "items": {
+              "$ref": "#/components/schemas/ReviewItem"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "right": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "topic": {
+            "type": "string"
+          },
+          "topic_slug": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "quiz_id",
+          "topic",
+          "topic_slug",
+          "length",
+          "answered",
+          "right",
+          "expected",
+          "elo_before",
+          "elo_after",
+          "margin_after",
+          "kind",
+          "level",
+          "mistakes_hit",
+          "mistakes_cleared",
+          "level_before",
+          "off_level",
+          "came_back",
+          "moved_on",
+          "review",
+          "bank_state",
+          "check"
+        ],
+        "type": "object"
+      },
+      "TopicSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "active_mistakes": {
+            "items": {
+              "$ref": "#/components/schemas/MistakeView"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "elo": {
+            "description": "0–300",
+            "format": "int64",
+            "type": "integer"
+          },
+          "level": {
+            "type": "string"
+          },
+          "margin": {
+            "description": "± Elo points: one standard deviation",
+            "format": "int64",
+            "type": "integer"
+          },
+          "recent": {
+            "$ref": "#/components/schemas/Recent"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "weakest": {
+            "items": {
+              "$ref": "#/components/schemas/SubtopicView"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "slug",
+          "elo",
+          "margin",
+          "level",
+          "weakest",
+          "active_mistakes",
+          "recent"
+        ],
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "Quizroom API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/chat": {
+      "get": {
+        "operationId": "get-chat",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/History"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Chat history and any job in progress"
+      },
+      "post": {
+        "operationId": "send-chat",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Accepted"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Send a chat message"
+      }
+    },
+    "/api/jobs/{id}": {
+      "get": {
+        "operationId": "get-job",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobView"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "A chat job's progress"
+      }
+    },
+    "/api/jobs/{id}/retry": {
+      "post": {
+        "operationId": "retry-job",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Accepted"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Queue a failed chat job's request again"
+      }
+    },
+    "/api/mistakes": {
+      "get": {
+        "operationId": "list-mistakes",
+        "parameters": [
+          {
+            "description": "topic slug; empty for all",
+            "explode": false,
+            "in": "query",
+            "name": "topic",
+            "schema": {
+              "description": "topic slug; empty for all",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MistakeView"
+                  },
+                  "type": [
+                    "array",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Mistakes, for one topic or all"
+      },
+      "post": {
+        "operationId": "add-mistake",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddMistakeInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MistakeView"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Add a mistake, for example from an AI agent after a mock interview"
+      }
+    },
+    "/api/questions/{id}/flag": {
+      "post": {
+        "operationId": "flag-question",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Take a question out of use"
+      }
+    },
+    "/api/quizzes": {
+      "post": {
+        "operationId": "start-quiz",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartQuizRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Started"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Start a quiz"
+      }
+    },
+    "/api/quizzes/{id}": {
+      "get": {
+        "operationId": "get-quiz",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Summary"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "A quiz's summary"
+      }
+    },
+    "/api/quizzes/{id}/answers": {
+      "post": {
+        "operationId": "answer-question",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnswerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Answer the current question"
+      }
+    },
+    "/api/quizzes/{id}/next": {
+      "get": {
+        "operationId": "next-question",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Shown"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "The question at the current position"
+      }
+    },
+    "/api/settings": {
+      "get": {
+        "operationId": "get-settings",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Settings"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Settings"
+      },
+      "put": {
+        "operationId": "put-settings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Settings"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Settings"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Save settings"
+      }
+    },
+    "/api/status": {
+      "get": {
+        "operationId": "get-status",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Claude runner status and question counts"
+      }
+    },
+    "/api/topics": {
+      "get": {
+        "operationId": "list-topics",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Card"
+                  },
+                  "type": [
+                    "array",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Topic cards for the home page"
+      }
+    },
+    "/api/topics/{slug}": {
+      "get": {
+        "operationId": "get-topic",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Detail"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "A topic's skill history, subtopics and mistakes"
+      }
+    },
+    "/api/topics/{slug}/generate": {
+      "post": {
+        "operationId": "generate-questions",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Accepted"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Ask Claude for more questions in a topic"
+      }
+    },
+    "/api/topics/{slug}/summary": {
+      "get": {
+        "operationId": "get-topic-summary",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopicSummary"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "default": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorModel"
+                }
+              }
+            },
+            "description": "Error"
+          }
+        },
+        "summary": "Compact summary for an AI agent, for example before a mock interview"
+      }
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "topics": [
+    {
+      "slug": "docker",
+      "name": "Docker",
+      "description": "Containers, images and Compose",
+      "subtopics": [
+        {"slug": "images", "name": "Images, layers and build cache"},
+        {"slug": "dockerfile", "name": "Dockerfile instructions and multi-stage builds"},
+        {"slug": "tags", "name": "Tags, digests and registries"},
+        {"slug": "lifecycle", "name": "Containers and their lifecycle"},
+        {"slug": "networking", "name": "Networking"},
+        {"slug": "storage", "name": "Storage"},
+        {"slug": "compose", "name": "Compose"},
+        {"slug": "security", "name": "Security"},
+        {"slug": "internals", "name": "Under the hood"}
+      ],
+      "confusion_groups": [
+        "CMD and ENTRYPOINT, and shell vs exec form",
+        "COPY and ADD",
+        "ARG and ENV",
+        "image and container",
+        "tag and digest",
+        "volume and bind mount",
+        "EXPOSE and publishing a port",
+        "docker stop and docker kill",
+        "apk and apt (Alpine vs Debian bases)"
+      ]
+    },
+    {
+      "slug": "kubernetes",
+      "name": "Kubernetes",
+      "description": "Running and operating apps on Kubernetes",
+      "subtopics": [
+        {"slug": "architecture", "name": "Architecture and control plane"},
+        {"slug": "workloads", "name": "Workloads"},
+        {"slug": "rollouts", "name": "Rollouts and health"},
+        {"slug": "configuration", "name": "Configuration"},
+        {"slug": "scheduling", "name": "Resources and scheduling"},
+        {"slug": "networking", "name": "Services and networking"},
+        {"slug": "storage", "name": "Storage"},
+        {"slug": "security", "name": "Security"},
+        {"slug": "troubleshooting", "name": "Troubleshooting"},
+        {"slug": "delivery", "name": "Packaging and delivery"}
+      ],
+      "confusion_groups": [
+        "who does what: API server, scheduler, controller manager, kubelet, etcd, kube-proxy, container runtime",
+        "Deployment, ReplicaSet, StatefulSet and DaemonSet",
+        "liveness, readiness and startup probes",
+        "requests and limits",
+        "ConfigMap and Secret",
+        "ClusterIP, NodePort, LoadBalancer and headless Services",
+        "Role, ClusterRole and their bindings",
+        "taints, tolerations and node affinity",
+        "PersistentVolume, PersistentVolumeClaim and StorageClass"
+      ]
+    }
+  ]
+}

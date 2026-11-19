@@ -1,0 +1,13 @@
+[
+  {"topic": "kubernetes", "subtopic": "architecture", "belief": "kubectl receives and processes the request", "correction": "kubectl is only a client. The API server authenticates, validates and stores the request."},
+  {"topic": "kubernetes", "subtopic": "workloads", "belief": "etcd or the scheduler brings a deleted Deployment pod back", "correction": "The ReplicaSet controller, in the controller manager, sees too few pods and creates one. The scheduler only picks its node, and etcd only stores state."},
+  {"topic": "kubernetes", "subtopic": "workloads", "belief": "The kubelet schedules DaemonSet pods", "correction": "The DaemonSet controller creates a pod for each eligible node and the scheduler binds them. The kubelet only runs pods already assigned to its node."},
+  {"topic": "kubernetes", "subtopic": "architecture", "belief": "The kubelet calls the CNI plugin", "correction": "The kubelet asks the container runtime over CRI to create the pod sandbox, and the runtime (containerd, for example) calls the CNI plugin."},
+  {"topic": "kubernetes", "subtopic": "troubleshooting", "belief": "Look in etcd to debug", "correction": "Inspect state through the API server with kubectl get, describe, events and logs. etcd is the store behind it, not a debugging tool."},
+  {"topic": "kubernetes", "subtopic": "scheduling", "belief": "Pods tolerate taints with \"tolerance\" and \"operation: Equals\"", "correction": "The field is tolerations, with operator: Equal or Exists."},
+  {"topic": "kubernetes", "subtopic": "workloads", "belief": "A DaemonSet has a replica count", "correction": "A DaemonSet has no replicas field. It runs one pod on each eligible node."},
+  {"topic": "docker", "subtopic": "images", "belief": "Nodes build their pods' images", "correction": "Images are built beforehand and then pulled, or loaded on kind, into each node's container runtime. Nodes never build images."},
+  {"topic": "docker", "subtopic": "dockerfile", "belief": "Install with apt, and curl is there, on Alpine", "correction": "Alpine uses apk, and curl isn't installed by default (BusyBox wget is)."},
+  {"topic": "docker", "subtopic": "security", "belief": "Root in a container is root on the node", "correction": "Container root is still limited by namespaces, capabilities and seccomp. It becomes node root only through a container escape, which running as root makes worse."},
+  {"topic": "docker", "subtopic": "tags", "belief": "Rebuilding an existing version tag is harmless", "correction": "Tags can be moved. Rebuilding 0.1.0 after it was loaded or pushed leaves different images under the same tag on different machines. Bump the version, or pin by digest."}
+]

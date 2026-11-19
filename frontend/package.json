@@ -1,0 +1,28 @@
+{
+  "name": "quizroom-frontend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "types": "openapi-typescript src/api/openapi.json -o src/api/schema.d.ts",
+    "check:html": "! grep -rn dangerouslySetInnerHTML src"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "5.108.0",
+    "openapi-fetch": "0.17.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.3.0",
+    "openapi-typescript": "7.13.0",
+    "typescript": "5.9.3",
+    "vite": "8.3.8",
+    "vitest": "5.1.1"
+  }
+}

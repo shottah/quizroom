@@ -1,0 +1,110 @@
+name: quizroom
+
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: quizroom
+      POSTGRES_DB: quizroom
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-quizroom-dev}
+    volumes:
+      # Postgres 18 keeps its data under /var/lib/postgresql/18/docker.
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quizroom -d quizroom"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend
+      target: backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://quizroom:${POSTGRES_PASSWORD:-quizroom-dev}@db:5432/quizroom?sslmode=disable
+      RUNNER_URL: http://runner:9000
+      TZ: ${TZ:-UTC}
+      # Extra host names to answer to besides localhost and 127.0.0.1, comma-separated.
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-}
+    networks: [default, engine]
+    depends_on:
+      db:
+        condition: service_healthy
+      runner:
+        condition: service_started
+
+  runner:
+    build:
+      context: ./backend
+      target: runner
+    restart: unless-stopped
+    init: true
+    # Only the backend can reach the runner. It needs internet access for Claude.
+    networks: [engine]
+    environment:
+      CLAUDE_CODE_OAUTH_TOKEN: ${CLAUDE_CODE_OAUTH_TOKEN:-}
+      # Optional. When set it wins over the subscription token and every call is billed to the API.
+      # Compose also reads it from your shell, so don't export it there by accident.
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      TZ: ${TZ:-UTC}
+    stop_signal: SIGINT
+    stop_grace_period: 120s
+
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8790:80"
+    depends_on: [backend]
+
+  # `make test` only.
+  test-db:
+    profiles: [test]
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test
+    ports:
+      - "127.0.0.1:55432:5432"
+    tmpfs:
+      - /var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  backend-test:
+    profiles: [test]
+    image: golang:1.27-alpine
+    working_dir: /src/backend
+    volumes:
+      - ./:/src
+      - gomod:/go/pkg/mod
+      - gocache:/root/.cache/go-build
+    environment:
+      CGO_ENABLED: "0"
+      TEST_DATABASE_URL: postgres://test:test@test-db:5432/test?sslmode=disable
+    # Unformatted Go fails the run, then the tests.
+    command:
+      - sh
+      - -c
+      - |
+        unformatted=$$(gofmt -l .)
+        if [ -n "$$unformatted" ]; then echo "These files need gofmt -w:"; echo "$$unformatted"; exit 1; fi
+        exec go test ./...
+    depends_on:
+      test-db:
+        condition: service_healthy
+
+networks:
+  engine: {}
+
+volumes:
+  pgdata: {}
+  gomod: {}
+  gocache: {}

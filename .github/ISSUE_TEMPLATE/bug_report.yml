@@ -1,0 +1,35 @@
+name: Bug report
+description: Something in Quizroom doesn't work the way it should.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open a topic
+        2. Press Start quiz
+        3. ...
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of make doctor
+      description: Run `make doctor` in your Quizroom folder and paste the output. It never prints your Claude credential.
+      render: text
+  - type: input
+    id: commit
+    attributes:
+      label: Commit
+      description: The output of `git rev-parse --short HEAD`.
+  - type: input
+    id: platform
+    attributes:
+      label: Operating system and Docker version
+      placeholder: macOS 26.1, Docker Desktop 4.52

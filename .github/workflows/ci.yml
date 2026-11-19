@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: make test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Go tests against a throwaway Postgres, then the frontend's typecheck,
+      # unit tests and raw-HTML guard. Never calls Claude.
+      - name: Run the tests
+        run: make test
+
+      - name: Check the generated API files are up to date
+        run: |
+          make types
+          git diff --exit-code -- frontend/src/api || {
+            echo "::error::frontend/src/api is out of date. Run 'make types' and commit the result."
+            exit 1
+          }
