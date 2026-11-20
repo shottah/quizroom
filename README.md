@@ -8,6 +8,8 @@
 
 Adaptive multiple-choice quizzes on any subject, with questions written for you by Claude. Quizroom runs on your own computer, keeps an Elo rating for each topic, and brings back the mistakes you actually make until you stop making them.
 
+![A Docker quiz in Quizroom: a wrong answer that falls for a common trap goes on the mistake list with its correction, and the Elo rating moves after every answer](docs/media/quiz.gif)
+
 - **Questions at your level.** Each quiz picks questions you have about a 75% chance of getting right, so they get harder as you improve. There are no pass marks.
 - **An Elo rating with a margin.** Each topic has an Elo from 0 to 300 (Beginner 0–99, Intermediate 100–199, Advanced 200–300), with a ± margin for how sure Quizroom is. A skill check measures it in 10–20 questions.
 - **Your own mistakes.** A wrong answer that matches a known trap goes on your mistake list. It comes back as a new question in your next quiz, then 1, 3, 7 and 21 days after each right answer. Five right in a row and it's done.
@@ -27,6 +29,8 @@ cd quizroom
 make token     # or: make api-key
 make up
 ```
+
+![Setting up Quizroom in a terminal: git clone, make api-key with the key hidden as it's pasted, make up and make doctor](docs/media/quickstart.gif)
 
 Then open http://127.0.0.1:8790 and press **Write my first 30 questions** on a topic. Claude takes a few minutes to write them.
 
@@ -64,6 +68,10 @@ Docker Compose runs four containers:
 - `runner`: the Claude Code CLI, run as `claude -p` with no tools, MCP servers or settings. It's the only container that holds the Claude credential, and only the backend can reach it.
 
 Each answer is scored with a three-parameter logistic model: your rating against the question's difficulty, with a floor for lucky guesses. As in Elo, both your rating and the question's move a little after every answer. The ± margin is a Glicko-style rating deviation: it narrows as you answer and widens while you're away.
+
+Each topic has a progress page with your Elo after every quiz, the margin from each skill check, your weak spots and your mistake list.
+
+![A topic's progress page: Elo 179 ± 27 (Intermediate), what to do next, and a chart of Elo after each quiz against the level bands](docs/media/progress.png)
 
 API formats are defined once, as Go types. The OpenAPI document at http://127.0.0.1:8790/openapi.json is generated from them, and so are the frontend's TypeScript types.
 
